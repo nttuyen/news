@@ -9,6 +9,9 @@
 	<packaging>pom</packaging>
 
     <version>0.0.1-SNAPSHOT</version>
+	<modules>
+		<module>rss-reader</module>
+	</modules>
 
 	<properties>
 		<version.log4j>1.2.17</version.log4j>
@@ -38,7 +41,7 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				
+
 			</plugins>
 		</pluginManagement>
 	</build>
