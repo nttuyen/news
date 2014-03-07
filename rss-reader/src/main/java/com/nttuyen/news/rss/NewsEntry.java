@@ -6,6 +6,7 @@ import java.util.Date;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class NewsEntry implements Serializable {
 	/**
 	 * The title of the item.

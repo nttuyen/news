@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class NewsChanel implements Serializable {
 
 	//Require field

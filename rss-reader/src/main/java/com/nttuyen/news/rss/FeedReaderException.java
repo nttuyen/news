@@ -3,6 +3,7 @@ package com.nttuyen.news.rss;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class FeedReaderException extends Exception {
 	public FeedReaderException() {
 		super();
