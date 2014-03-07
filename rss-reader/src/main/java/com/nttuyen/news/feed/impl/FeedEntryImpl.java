@@ -28,14 +28,16 @@ public class FeedEntryImpl implements FeedEntry {
     private final String link;
     private final String description;
     private final Image image;
+    private final String author;
     private final Date publishDate;
     private final String category;
 
-    public FeedEntryImpl(String title, String link, String description, Image image, Date publishDate, String category) {
+    public FeedEntryImpl(String title, String link, String description, Image image, String author, Date publishDate, String category) {
         this.title = title;
         this.link = link;
         this.description = description;
         this.image = image;
+        this.author = author;
         this.publishDate = publishDate;
         this.category = category;
     }
@@ -58,6 +60,11 @@ public class FeedEntryImpl implements FeedEntry {
     @Override
     public Image getImage() {
         return this.image;
+    }
+
+    @Override
+    public String getAuthor() {
+        return this.author;
     }
 
     @Override

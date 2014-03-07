@@ -7,6 +7,7 @@ public interface FeedEntry {
     String getLink();
     String getDescription();
     Image getImage();
+    String getAuthor();
     Date getPublishDate();
     String getCategory();
 
@@ -15,6 +16,7 @@ public interface FeedEntry {
         FeedEntryBuilder withLink(String link);
         FeedEntryBuilder withDescription(String description);
         FeedEntryBuilder withImage(Image image);
+        FeedEntryBuilder withAuthor(String author);
         FeedEntryBuilder withPublishDate(Date publishDate);
         FeedEntryBuilder withCategory(String category);
     }
