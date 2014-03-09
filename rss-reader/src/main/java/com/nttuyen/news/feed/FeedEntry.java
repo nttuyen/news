@@ -11,6 +11,7 @@ public interface FeedEntry {
     Date getPublishDate();
     String getCategory();
 
+	@Deprecated
     interface FeedEntryBuilder extends Builder<FeedEntry> {
         FeedEntryBuilder withTitle(String title);
         FeedEntryBuilder withLink(String link);

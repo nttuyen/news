@@ -26,6 +26,7 @@ import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.Image;
 
+@Deprecated
 public class FeedBuilderImpl implements Feed.FeedBuilder {
     private String title;
     private String link;

@@ -18,11 +18,70 @@
  */
 package com.nttuyen.news.feed;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ServiceLoader;
 
-public interface FeedReader {
-    Feed parse(InputStream input) throws IOException, FeedException;
-    Feed parse(InputStream input, Feed.FeedBuilder builder) throws IOException, FeedException;
-    Feed parse(String url) throws IOException, FeedException;
+public class FeedReader {
+	protected List<FeedProvider> providers = null;
+
+	protected void initProvider() {
+		providers = new LinkedList<FeedProvider>();
+
+		Iterator<FeedProvider> iterator = ServiceLoader.load(FeedProvider.class).iterator();
+		while (iterator.hasNext()) {
+			FeedProvider provider = iterator.next();
+			providers.add(provider);
+		}
+	}
+
+	/**
+	 * Type format is: superType/subType/subType1/subType2[...]
+	 * for example: rss/cafef.vn/Tin-moi.rss
+	 * @param type
+	 * @return
+	 */
+	protected FeedProvider findProvider(String type) {
+		if(providers == null) {
+			initProvider();
+		}
+		while (type != null && !type.isEmpty()) {
+			for(FeedProvider provider : providers) {
+				for(String supportedType : provider.getSupportedTypes()) {
+					if(supportedType.equals(type)) {
+						return provider;
+					}
+				}
+				if("*".equals(type)) {
+					type = "";
+				} else {
+					int index = type.lastIndexOf('/');
+					if(index > 0) {
+						type = type.substring(0, index);
+					} else {
+						type = "*";
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public Feed read(InputStream input, String type) throws IOException, FeedException {
+		if(input == null) {
+			throw new FeedException("InputStream must not null");
+		}
+
+		FeedProvider provider = this.findProvider(type);
+		if(provider != null) {
+			return provider.read(input);
+		}
+
+		throw new FeedException("Can not found FeedProvider for type: " + type);
+	}
 }

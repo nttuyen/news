@@ -23,6 +23,7 @@ import java.util.Date;
 import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.Image;
 
+@Deprecated
 public class FeedEntryBuilderImpl implements FeedEntry.FeedEntryBuilder {
     private String title;
     private String link;

@@ -16,6 +16,7 @@ public interface Feed {
 
     List<FeedEntry> getEntries();
 
+	@Deprecated
     interface FeedBuilder extends Builder<Feed> {
         FeedBuilder withTitle(String title);
         FeedBuilder withLink(String linke);

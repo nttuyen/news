@@ -3,11 +3,21 @@ package com.nttuyen.news.feed;
 import java.io.Serializable;
 
 public class Image implements Serializable {
-    private String url;
-    private String title;
-    private String link;
+    public final String url;
+    public final String title;
+    public final String link;
 
-    private int width;
-    private int height;
-    private String description;
+    public final int width;
+    public final int height;
+    public final String description;
+
+	public Image(String url, String title, String link, int width, int height, String description) {
+		this.url = url;
+		this.title = title;
+		this.link = link;
+
+		this.width = width;
+		this.height = height;
+		this.description = description;
+	}
 }
