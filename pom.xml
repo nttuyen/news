@@ -15,18 +15,39 @@
 
 	<properties>
 		<version.rome>1.0</version.rome>
+    <version.json>20140107</version.json>
+    <version.quartz>2.2.1</version.quartz>
 		<version.log4j>1.2.17</version.log4j>
 		<version.junit>4.10</version.junit>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+
+      <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
+        <version>${version.json}</version>
+      </dependency>
+
 			<!-- ROME RSS reader -->
 			<dependency>
 				<groupId>rome</groupId>
 				<artifactId>rome</artifactId>
 				<version>${version.rome}</version>
 			</dependency>
+
+      <!-- Quartz scheduler -->
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz</artifactId>
+        <version>${version.quartz}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz-jobs</artifactId>
+        <version>${version.quartz}</version>
+      </dependency>
 
 			<!-- For Logging -->
 			<dependency>

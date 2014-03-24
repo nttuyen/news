@@ -1,0 +1,16 @@
+{
+  "name": "feed",
+  "descriptions": "All job to read feed",
+  "jobs": [
+    {
+      "name": "bizlive.vn",
+      "description": "This job will read feed from site bizlive.vn",
+      "timeInterval": 1,
+      "feedRootType": "rss/2.0",
+      "links": [
+          "http://bizlive.vn/rss/vi-mo-2.rss",
+          "http://bizlive.vn/rss/tai-chinh-3.rss"
+      ]
+    }
+  ]
+}
