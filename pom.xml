@@ -15,6 +15,8 @@
 
 	<properties>
 		<version.rome>1.0</version.rome>
+    <version.dom4j>1.6.1</version.dom4j>
+    <version.httpclient>4.3.3</version.httpclient>
     <version.json>20140107</version.json>
     <version.quartz>2.2.1</version.quartz>
 		<version.log4j>1.2.17</version.log4j>
@@ -28,6 +30,18 @@
         <groupId>org.json</groupId>
         <artifactId>json</artifactId>
         <version>${version.json}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${version.httpclient}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${version.dom4j}</version>
       </dependency>
 
 			<!-- ROME RSS reader -->

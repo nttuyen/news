@@ -18,13 +18,20 @@
  */
 package com.nttuyen.news.scheduler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
 import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
+import com.nttuyen.news.feed.FeedException;
 import com.nttuyen.news.feed.FeedReader;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.quartz.Job;
@@ -34,32 +41,48 @@ import org.quartz.JobExecutionException;
 
 public class FeedReaderJob implements Job {
     private static final Logger log = Logger.getLogger(FeedReaderJob.class);
-
+    public static final int MAX_TRY = 5;
+    public static final int SLEEP_TIME = 5000;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getMergedJobDataMap();
         JSONArray links = new JSONArray(data.getString("links"));
         String feedRootType = data.getString("feedRootType");
-        for(int i = 0; i < links.length(); i++) {
-            String link = links.getString(i);
-            try {
-                URL url = new URL(link);
-                InputStream input = url.openStream();
-                FeedReader reader = new FeedReader();
 
+        FeedReader reader = new FeedReader();
+        try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            for(int i = 0; i < links.length(); i++) {
+                String link = links.getString(i);
+                HttpGet get = new HttpGet(link);
                 StringBuilder type = new StringBuilder(feedRootType);
                 type.append(link.substring(link.indexOf('/') + 1));
-                log.debug("Feed type: " + type.toString());
-
-                Feed feed = reader.read(input, type.toString());
-                log.debug("Read Feed: " + feed.getLink());
-                List<FeedEntry> entries = feed.getEntries();
-                log.debug("No Entry: " + entries.size());
-
-            } catch (Exception e) {
-                log.error("Exception", e);
+                int noTry = 0;
+                while(noTry < MAX_TRY) {
+                    noTry++;
+                    try (CloseableHttpResponse response = httpClient.execute(get)) {
+                        Feed feed = reader.read(response.getEntity().getContent(), type.toString());
+                        //TODO: process feed at here
+                    } catch (ClientProtocolException ex) {
+                        throw ex;
+                    } catch (IOException ex) {
+                        if(noTry >= MAX_TRY) {
+                            throw ex;
+                        } else {
+                            try {
+                                Thread.sleep(SLEEP_TIME);
+                            } catch (InterruptedException e) {
+                                log.error(e);
+                            }
+                        }
+                    } catch (FeedException ex) {
+                        log.error(ex);
+                        break;
+                    }
+                }
             }
+        } catch (IOException ex) {
+            log.error("IOException", ex);
         }
     }
 }
