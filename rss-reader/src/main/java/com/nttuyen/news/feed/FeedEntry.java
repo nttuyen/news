@@ -10,15 +10,4 @@ public interface FeedEntry {
     String getAuthor();
     Date getPublishDate();
     String getCategory();
-
-	@Deprecated
-    interface FeedEntryBuilder extends Builder<FeedEntry> {
-        FeedEntryBuilder withTitle(String title);
-        FeedEntryBuilder withLink(String link);
-        FeedEntryBuilder withDescription(String description);
-        FeedEntryBuilder withImage(Image image);
-        FeedEntryBuilder withAuthor(String author);
-        FeedEntryBuilder withPublishDate(Date publishDate);
-        FeedEntryBuilder withCategory(String category);
-    }
 }
