@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -83,23 +84,12 @@ public class Main {
                 String feedRootType = js.getString("feedRootType");
                 JSONArray linkJsons = js.getJSONArray("links");
 
-                StringBuilder listLinks = new StringBuilder();
-                String[] links = new String[linkJsons.length()];
-                for(int j = 0; j < linkJsons.length(); j++) {
-                    links[j] = linkJsons.getString(j);
-
-                    if(listLinks.length() > 0) {
-                        listLinks.append("###");
-                    }
-                    listLinks.append(links[j]);
-                }
-
                 JobDetail job = JobBuilder
                         .newJob(FeedReaderJob.class)
                         .withIdentity(name, "FEED_READER_JOB_GROUP")
                         .usingJobData("name", name)
                         .usingJobData("feedRootType", feedRootType)
-                        .usingJobData("links", listLinks.toString())
+                        .usingJobData("links", linkJsons.toString())
                         .build();
 
                 Trigger trigger = TriggerBuilder

@@ -26,6 +26,7 @@ import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.FeedReader;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -33,12 +34,15 @@ import org.quartz.JobExecutionException;
 
 public class FeedReaderJob implements Job {
     private static final Logger log = Logger.getLogger(FeedReaderJob.class);
+
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getMergedJobDataMap();
-        String[] links = data.getString("links").split("###");
+        JSONArray links = new JSONArray(data.getString("links"));
         String feedRootType = data.getString("feedRootType");
-        for(String link : links) {
+        for(int i = 0; i < links.length(); i++) {
+            String link = links.getString(i);
             try {
                 URL url = new URL(link);
                 InputStream input = url.openStream();
