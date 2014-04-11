@@ -18,7 +18,6 @@
  */
 package com.nttuyen.news.feed;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -30,7 +29,7 @@ public class FeedReader {
 	protected List<FeedProvider> providers = null;
 
 	protected void initProvider() {
-		providers = new LinkedList<FeedProvider>();
+		providers = new LinkedList<>();
 
 		Iterator<FeedProvider> iterator = ServiceLoader.load(FeedProvider.class).iterator();
 		while (iterator.hasNext()) {
@@ -56,15 +55,16 @@ public class FeedReader {
 						return provider;
 					}
 				}
-				if("*".equals(type)) {
-					type = "";
+			}
+
+			if("*".equals(type)) {
+				type = "";
+			} else {
+				int index = type.lastIndexOf('/');
+				if(index > 0) {
+					type = type.substring(0, index);
 				} else {
-					int index = type.lastIndexOf('/');
-					if(index > 0) {
-						type = type.substring(0, index);
-					} else {
-						type = "*";
-					}
+					type = "*";
 				}
 			}
 		}
