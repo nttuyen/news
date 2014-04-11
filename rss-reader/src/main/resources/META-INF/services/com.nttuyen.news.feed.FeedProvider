@@ -1,1 +1,3 @@
 com.nttuyen.news.feed.provider.RomeFeedProvider
+com.nttuyen.news.feed.provider.rss.RSS20FeedProvider
+com.nttuyen.news.feed.provider.bizlive.BizliveFeedProvider
