@@ -17,6 +17,7 @@
     <version.jooq>3.3.1</version.jooq>
     <version.jdbc.mysql>5.1.30</version.jdbc.mysql>
     <version.rome>1.0</version.rome>
+    <version.jsoup>1.7.3</version.jsoup>
     <version.dom4j>1.6.1</version.dom4j>
     <version.jaxen>1.1.6</version.jaxen>
     <version.httpclient>4.3.3</version.httpclient>
@@ -60,7 +61,11 @@
         <artifactId>httpclient</artifactId>
         <version>${version.httpclient}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>${version.jsoup}</version>
+      </dependency>
       <dependency>
         <groupId>dom4j</groupId>
         <artifactId>dom4j</artifactId>
