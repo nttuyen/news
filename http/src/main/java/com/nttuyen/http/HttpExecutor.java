@@ -1,4 +1,4 @@
-package com.nttuyen.news.http;
+package com.nttuyen.http;
 
 /**
  * @author nttuyen266@gmail.com

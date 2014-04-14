@@ -11,6 +11,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <modules>
     <module>rss-reader</module>
+    <module>http</module>
   </modules>
 
   <properties>
@@ -29,6 +30,19 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Module -->
+      <dependency>
+        <groupId>com.nttuyen.news</groupId>
+        <artifactId>http</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nttuyen.news</groupId>
+        <artifactId>rss-reader</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+
       <dependency>
         <groupId>org.jooq</groupId>
         <artifactId>jooq</artifactId>

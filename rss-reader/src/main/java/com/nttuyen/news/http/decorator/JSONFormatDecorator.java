@@ -1,9 +1,9 @@
 package com.nttuyen.news.http.decorator;
 
-import com.nttuyen.news.http.HttpCallback;
-import com.nttuyen.news.http.HttpException;
-import com.nttuyen.news.http.HttpExecutorDecorator;
-import com.nttuyen.news.http.HttpRequest;
+import com.nttuyen.http.HttpCallback;
+import com.nttuyen.http.HttpException;
+import com.nttuyen.http.HttpExecutorDecorator;
+import com.nttuyen.http.HttpRequest;
 
 /**
  * @author nttuyen266@gmail.com

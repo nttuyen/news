@@ -1,18 +1,16 @@
-package com.nttuyen.news.http.impl;
+package com.nttuyen.http.impl;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author nttuyen266@gmail.com
  */
-public class HttpResponseImpl implements com.nttuyen.news.http.HttpResponse {
+public class HttpResponseImpl implements com.nttuyen.http.HttpResponse {
     private static final Logger log = Logger.getLogger(HttpResponseImpl.class);
 
     private final HttpResponse response;

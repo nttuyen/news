@@ -1,4 +1,4 @@
-package com.nttuyen.news.http;
+package com.nttuyen.http;
 
 import java.util.HashMap;
 import java.util.Map;

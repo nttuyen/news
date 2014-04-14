@@ -1,10 +1,10 @@
 package com.nttuyen.news.rest;
 
+import com.nttuyen.http.HttpException;
+import com.nttuyen.http.HttpExecutor;
+import com.nttuyen.http.HttpExecutorFactory;
+import com.nttuyen.http.HttpRequest;
 import com.nttuyen.news.Consts;
-import com.nttuyen.news.http.HttpException;
-import com.nttuyen.news.http.HttpExecutor;
-import com.nttuyen.news.http.HttpExecutorFactory;
-import com.nttuyen.news.http.HttpRequest;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;

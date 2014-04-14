@@ -1,7 +1,6 @@
-package com.nttuyen.news.http;
+package com.nttuyen.http;
 
-import com.nttuyen.news.http.impl.HttpExecutorImpl;
-
+import com.nttuyen.http.impl.HttpExecutorImpl;
 import java.util.ServiceLoader;
 
 /**

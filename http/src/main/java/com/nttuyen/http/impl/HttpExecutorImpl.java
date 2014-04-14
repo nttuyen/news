@@ -1,9 +1,9 @@
-package com.nttuyen.news.http.impl;
+package com.nttuyen.http.impl;
 
-import com.nttuyen.news.http.HttpCallback;
-import com.nttuyen.news.http.HttpExecutor;
-import com.nttuyen.news.http.HttpException;
-import com.nttuyen.news.http.HttpRequest;
+import com.nttuyen.http.HttpCallback;
+import com.nttuyen.http.HttpException;
+import com.nttuyen.http.HttpExecutor;
+import com.nttuyen.http.HttpRequest;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -14,6 +14,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;

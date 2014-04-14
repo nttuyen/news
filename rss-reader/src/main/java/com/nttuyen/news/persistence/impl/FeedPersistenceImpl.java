@@ -1,10 +1,13 @@
 package com.nttuyen.news.persistence.impl;
 
+import com.nttuyen.http.HttpException;
+import com.nttuyen.http.HttpExecutor;
+import com.nttuyen.http.HttpExecutorFactory;
+import com.nttuyen.http.HttpRequest;
 import com.nttuyen.news.Consts;
 import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.Image;
-import com.nttuyen.news.http.*;
 import com.nttuyen.news.persistence.FeedPersistence;
 import com.nttuyen.news.persistence.FeedPersistenceException;
 import com.nttuyen.news.util.StringUtils;
