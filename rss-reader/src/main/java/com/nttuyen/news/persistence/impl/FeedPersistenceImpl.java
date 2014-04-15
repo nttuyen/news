@@ -92,6 +92,7 @@ public class FeedPersistenceImpl implements FeedPersistence {
             request.addParam("jform[metadata][author]", entry.getAuthor() == null ? "" : entry.getAuthor());
             request.addParam("jform[metadata][rights]", "");
             request.addParam("jform[metadata][xreference]", entry.getLink());
+            request.addParam("originLink", entry.getLink());
 
             //TODO: how to process IMAGE
             request.addParam("jform[images][image_intro]", "");
