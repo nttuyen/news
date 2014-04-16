@@ -19,14 +19,14 @@
 package com.nttuyen.news.scheduler;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.List;
+import java.util.ServiceLoader;
 
 import com.nttuyen.news.feed.Feed;
-import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.FeedException;
 import com.nttuyen.news.feed.FeedReader;
+import com.nttuyen.news.persistence.FeedPersistence;
+import com.nttuyen.news.persistence.FeedPersistenceException;
+import com.nttuyen.news.persistence.impl.FeedPersistenceImpl;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -62,7 +62,8 @@ public class FeedReaderJob implements Job {
                     noTry++;
                     try (CloseableHttpResponse response = httpClient.execute(get)) {
                         Feed feed = reader.read(response.getEntity().getContent(), type.toString());
-                        //TODO: process feed at here
+						FeedPersistence persistence = new FeedPersistenceImpl();
+                        persistence.persist(feed);
                     } catch (ClientProtocolException ex) {
                         throw ex;
                     } catch (IOException ex) {
@@ -83,6 +84,8 @@ public class FeedReaderJob implements Job {
             }
         } catch (IOException ex) {
             log.error("IOException", ex);
+        } catch (Throwable ex) {
+            log.error(ex);
         }
     }
 }
