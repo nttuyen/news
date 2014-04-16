@@ -6,16 +6,12 @@ import java.util.Map;
 /**
  * @author nttuyen266@gmail.com
  */
-public class HttpRequest {
-    public static enum Method {
-        GET, POST
-    }
-
+public class Request {
+  public final Method method;
     public final String url;
-    public final Method method;
     private Map<String, String> params;
 
-    public HttpRequest(String url, Method method) {
+    public Request(String url, Method method) {
         this.url = url;
         this.method = method;
     }

@@ -6,7 +6,7 @@ import java.io.InputStream;
 /**
  * @author nttuyen266@gmail.com
  */
-public interface HttpResponse {
+public interface Response {
     InputStream getInputStream() throws IOException;
     int getStatusCode();
     String getStatusString();

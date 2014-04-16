@@ -1,10 +1,12 @@
 package com.nttuyen.news.persistence.impl;
 
+import com.nttuyen.common.Callback;
+import com.nttuyen.http.Executor;
+import com.nttuyen.http.HTTP;
 import com.nttuyen.http.HttpException;
-import com.nttuyen.http.HttpExecutor;
-import com.nttuyen.http.HttpExecutorFactory;
-import com.nttuyen.http.HttpRequest;
-import com.nttuyen.http.HttpResponse;
+import com.nttuyen.http.Method;
+import com.nttuyen.http.Request;
+import com.nttuyen.http.Response;
 import com.nttuyen.news.Consts;
 import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
@@ -16,7 +18,9 @@ import org.apache.log4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author nttuyen266@gmail.com
@@ -24,25 +28,24 @@ import java.util.List;
 public class FeedPersistenceImpl implements FeedPersistence {
     private static final Logger log = Logger.getLogger(FeedPersistenceImpl.class);
 
-    private HttpExecutor executor = HttpExecutorFactory.createDefault();
+    private Executor executor = HTTP.createDefault();
     private boolean loggedIn = false;
 
 	@Override
 	public void persist(Feed feed) throws FeedPersistenceException {
         final String url = Consts.REST_ROOT_URL;
         if(!loggedIn) {
-            HttpRequest request = new HttpRequest(url, HttpRequest.Method.POST);
+            Request request = new Request(url, Method.POST);
             request.addParam("option", "com_login");
             request.addParam("task", "api.login");
             request.addParam("format", "json");
             request.addParam("username", "crawler");
             request.addParam("password", "123456");
             try {
-                executor.execute(request, (response) -> {
-                    if(((HttpResponse)response[0]).getStatusCode() == 200) {
-                        loggedIn = true;
-                    }
-                });
+                Response response = executor.execute(request);
+                if(response.getStatusCode() == 200) {
+                  loggedIn = true;
+                }
             } catch (HttpException e) {
                 log.error(e);
                 return;
@@ -57,7 +60,7 @@ public class FeedPersistenceImpl implements FeedPersistence {
         List<FeedEntry> entries = feed.getEntries();
         for(FeedEntry entry : entries) {
             //TODO: how to detect this content was collected
-            HttpRequest request = new HttpRequest(Consts.REST_ROOT_URL, HttpRequest.Method.POST);
+            Request request = new Request(Consts.REST_ROOT_URL, Method.POST);
             //Option component
             request.addParam("option", "com_content");
             request.addParam("task", "article.apply");
@@ -153,9 +156,7 @@ public class FeedPersistenceImpl implements FeedPersistence {
             request.addParam("jform[attribs][show_urls_images_frontend]", "");
 
             try {
-                executor.execute(request, (response) -> {
-                    log.info("Persistence status: " + ((HttpResponse)response[0]).getStatusCode());
-                });
+                executor.execute(request);
             } catch (HttpException ex) {
                 log.error(ex);
             }

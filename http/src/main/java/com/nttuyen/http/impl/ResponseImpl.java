@@ -1,7 +1,10 @@
 package com.nttuyen.http.impl;
 
+import com.nttuyen.http.Response;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -10,33 +13,30 @@ import java.util.Map;
 /**
  * @author nttuyen266@gmail.com
  */
-public class HttpResponseImpl implements com.nttuyen.http.HttpResponse {
-    private static final Logger log = Logger.getLogger(HttpResponseImpl.class);
+public class ResponseImpl implements Response {
+    private static final Logger log = Logger.getLogger(ResponseImpl.class);
 
     private final HttpResponse response;
+    private BufferedHttpEntity entity;
     private Map<String, String> headers = null;
     private String content = null;
 
-    public HttpResponseImpl(HttpResponse response) {
+    public ResponseImpl(HttpResponse response) {
         if(response == null) {
             throw new IllegalArgumentException("response null is not acceptable");
         }
         this.response = response;
+        try {
+            this.entity = new BufferedHttpEntity(this.response.getEntity());
+        } catch (IOException ex) {
+            log.error(ex);
+            this.entity = null;
+        }
     }
 
     @Override
     public InputStream getInputStream() throws IOException {
-        //TODO: should we get content before return input stream?
-        try {
-            return response.getEntity().getContent();
-        } catch (IllegalStateException|IOException ex) {
-            log.error(ex);
-            if(this.content != null) {
-                return new ByteArrayInputStream(this.content.getBytes("UTF-8"));
-            } else {
-                throw ex;
-            }
-        }
+        return this.entity == null ? null : this.entity.getContent();
     }
 
     public int getStatusCode() {
@@ -64,29 +64,16 @@ public class HttpResponseImpl implements com.nttuyen.http.HttpResponse {
         if(this.content != null) {
             return this.content;
         }
-        InputStream input = null;
-        try {
-            input = response.getEntity().getContent();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-            String line;
-            StringBuilder builder = new StringBuilder();
-            while((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-            this.content = builder.toString();
-        } catch (IOException | IllegalStateException ex) {
+        if(this.entity == null) {
+          this.content = "";
+        } else {
+          try {
+          this.content = EntityUtils.toString(this.entity);
+          } catch (IOException ex) {
             log.error(ex);
             this.content = "";
-        } finally {
-            if(input != null) {
-                try {
-                    input.close();
-                } catch (IOException ex) {
-                    log.error(ex);
-                }
-            }
+          }
         }
-
         return this.content;
     }
 }

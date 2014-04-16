@@ -1,19 +1,19 @@
 package com.nttuyen.news.http.decorator;
 
-import com.nttuyen.common.Callback;
+import com.nttuyen.http.ExecutorDecorator;
 import com.nttuyen.http.HttpException;
-import com.nttuyen.http.HttpExecutorDecorator;
-import com.nttuyen.http.HttpRequest;
+import com.nttuyen.http.Request;
+import com.nttuyen.http.Response;
 
 /**
  * @author nttuyen266@gmail.com
  */
-public class JSONFormatDecorator extends HttpExecutorDecorator {
+public class JSONFormatDecorator extends ExecutorDecorator {
     @Override
-    public void execute(HttpRequest command, Callback callback) throws HttpException {
-        if(command.getParams() == null || !"json".equals(command.getParams().get("format"))) {
-            command.addParam("json", "json");
+    public Response execute(Request request) throws HttpException {
+        if(request.getParams() == null || !"json".equals(request.getParams().get("format"))) {
+            request.addParam("json", "json");
         }
-        executor.execute(command, callback);
+        return executor.execute(request);
     }
 }
