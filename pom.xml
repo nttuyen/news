@@ -13,6 +13,7 @@
     <module>rss-reader</module>
     <module>http</module>
     <module>common</module>
+    <module>content</module>
   </modules>
 
   <properties>
@@ -40,6 +41,11 @@
       <dependency>
         <groupId>com.nttuyen.news</groupId>
         <artifactId>http</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nttuyen.news</groupId>
+        <artifactId>content</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
