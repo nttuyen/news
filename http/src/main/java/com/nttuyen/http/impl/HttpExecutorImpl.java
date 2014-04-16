@@ -1,6 +1,6 @@
 package com.nttuyen.http.impl;
 
-import com.nttuyen.http.HttpCallback;
+import com.nttuyen.common.Callback;
 import com.nttuyen.http.HttpException;
 import com.nttuyen.http.HttpExecutor;
 import com.nttuyen.http.HttpRequest;
@@ -14,7 +14,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class HttpExecutorImpl implements HttpExecutor {
     }
 
     @Override
-    public void execute(HttpRequest request, HttpCallback callback) throws HttpException {
+    public void execute(HttpRequest request, Callback callback) throws HttpException {
         if(request.url == null) {
             log.error("Request URL must not be null");
             return;
@@ -46,7 +45,7 @@ public class HttpExecutorImpl implements HttpExecutor {
         }
     }
 
-    public void get(HttpRequest request, HttpCallback callback) {
+    public void get(HttpRequest request, Callback callback) {
         Map<String, String> map = request.getParams();
         StringJoiner params = new StringJoiner("&");
         if(map != null && map.size() > 0) {
@@ -60,13 +59,13 @@ public class HttpExecutorImpl implements HttpExecutor {
         HttpGet get = new HttpGet(url);
         try(CloseableHttpResponse response = httpClient.execute(get)) {
             if(callback != null) {
-                callback.handle(new HttpResponseImpl(response));
+                callback.callback(new HttpResponseImpl(response));
             }
         } catch (IOException ex) {
             log.error(ex);
         }
     }
-    public void post(HttpRequest request, HttpCallback callback) throws HttpException {
+    public void post(HttpRequest request, Callback callback) throws HttpException {
         List<NameValuePair> params = new LinkedList<>();
         Map<String, String> map = request.getParams();
         if(map != null && map.size() > 0) {
@@ -83,7 +82,7 @@ public class HttpExecutorImpl implements HttpExecutor {
         try {
             try(CloseableHttpResponse response = httpClient.execute(post)) {
                 if(callback != null) {
-                    callback.handle(new HttpResponseImpl(response));
+                    callback.callback(new HttpResponseImpl(response));
                 }
             }
         } catch (IOException e) {

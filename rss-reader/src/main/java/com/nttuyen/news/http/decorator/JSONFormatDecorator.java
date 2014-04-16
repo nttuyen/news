@@ -1,6 +1,6 @@
 package com.nttuyen.news.http.decorator;
 
-import com.nttuyen.http.HttpCallback;
+import com.nttuyen.common.Callback;
 import com.nttuyen.http.HttpException;
 import com.nttuyen.http.HttpExecutorDecorator;
 import com.nttuyen.http.HttpRequest;
@@ -10,7 +10,7 @@ import com.nttuyen.http.HttpRequest;
  */
 public class JSONFormatDecorator extends HttpExecutorDecorator {
     @Override
-    public void execute(HttpRequest command, HttpCallback callback) throws HttpException {
+    public void execute(HttpRequest command, Callback callback) throws HttpException {
         if(command.getParams() == null || !"json".equals(command.getParams().get("format"))) {
             command.addParam("json", "json");
         }

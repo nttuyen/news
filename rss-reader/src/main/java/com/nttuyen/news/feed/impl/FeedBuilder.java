@@ -1,10 +1,9 @@
 package com.nttuyen.news.feed.impl;
 
-import com.nttuyen.news.feed.Builder;
+import com.nttuyen.common.Builder;
 import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.Image;
-
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;

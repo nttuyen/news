@@ -4,6 +4,7 @@ import com.nttuyen.http.HttpException;
 import com.nttuyen.http.HttpExecutor;
 import com.nttuyen.http.HttpExecutorFactory;
 import com.nttuyen.http.HttpRequest;
+import com.nttuyen.http.HttpResponse;
 import com.nttuyen.news.Consts;
 import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedEntry;
@@ -38,7 +39,7 @@ public class FeedPersistenceImpl implements FeedPersistence {
             request.addParam("password", "123456");
             try {
                 executor.execute(request, (response) -> {
-                    if(response.getStatusCode() == 200) {
+                    if(((HttpResponse)response[0]).getStatusCode() == 200) {
                         loggedIn = true;
                     }
                 });
@@ -153,7 +154,7 @@ public class FeedPersistenceImpl implements FeedPersistence {
 
             try {
                 executor.execute(request, (response) -> {
-                    log.info("Persistence status: " + response.getStatusCode());
+                    log.info("Persistence status: " + ((HttpResponse)response[0]).getStatusCode());
                 });
             } catch (HttpException ex) {
                 log.error(ex);

@@ -4,6 +4,7 @@ import com.nttuyen.http.HttpException;
 import com.nttuyen.http.HttpExecutor;
 import com.nttuyen.http.HttpExecutorFactory;
 import com.nttuyen.http.HttpRequest;
+import com.nttuyen.http.HttpResponse;
 import com.nttuyen.news.Consts;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -33,7 +34,7 @@ public class TestRestLoginApi {
         request.addParam("password", "123456");
         try {
             executor.execute(request, (response) -> {
-                Assert.assertEquals(200, response.getStatusCode());
+                Assert.assertEquals(200, ((HttpResponse)response[0]).getStatusCode());
             });
         } catch (HttpException e) {
             log.error(e);

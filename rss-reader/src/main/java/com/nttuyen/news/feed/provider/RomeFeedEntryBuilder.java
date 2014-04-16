@@ -1,6 +1,6 @@
 package com.nttuyen.news.feed.provider;
 
-import com.nttuyen.news.feed.Builder;
+import com.nttuyen.common.Builder;
 import com.nttuyen.news.feed.FeedEntry;
 import com.nttuyen.news.feed.impl.FeedEntryImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
