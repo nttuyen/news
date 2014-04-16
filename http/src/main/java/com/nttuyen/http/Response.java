@@ -11,5 +11,6 @@ public interface Response {
     int getStatusCode();
     String getStatusString();
     String getHeader(String name);
+    String[] getHeaders(String name);
     String getResponse();
 }
