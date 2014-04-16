@@ -31,12 +31,13 @@ import org.apache.http.conn.routing.HttpRoutePlanner;
 
 public class RandomProxyDecorator extends ExecutorDecorator {
   @Override
-  public void setExecutor(Executor executor) {
+  public ExecutorDecorator setExecutor(Executor executor) {
     super.setExecutor(executor);
     if(this.getExecutor() instanceof HttpClientExecutor) {
       HttpClientExecutor exe = (HttpClientExecutor)this.getExecutor();
       exe.getBuilder().setRoutePlanner(routePlanner);
     }
+      return this;
   }
 
   @Override

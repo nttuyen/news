@@ -10,11 +10,12 @@ import java.util.ServiceLoader;
 public class HTTP {
     public static Executor createDefault() {
         Executor executor = new HttpClientExecutor();
-        ServiceLoader<ExecutorDecorator> serviceLoader = ServiceLoader.load(ExecutorDecorator.class);
-        for(ExecutorDecorator decorator : serviceLoader) {
-            decorator.setExecutor(executor);
-            executor = decorator;
-        }
+        //TODO: how to process decorator
+//        ServiceLoader<ExecutorDecorator> serviceLoader = ServiceLoader.load(ExecutorDecorator.class);
+//        for(ExecutorDecorator decorator : serviceLoader) {
+//            decorator.setExecutor(executor);
+//            executor = decorator;
+//        }
         return executor;
     }
 }

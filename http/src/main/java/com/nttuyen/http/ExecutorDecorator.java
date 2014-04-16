@@ -7,8 +7,9 @@ public abstract class ExecutorDecorator implements Executor {
     protected Executor executor;
     public ExecutorDecorator() {
     }
-    public void setExecutor(Executor executor) {
+    public ExecutorDecorator setExecutor(Executor executor) {
         this.executor = executor;
+        return this;
     }
 
     protected ExecutorDecorator getDecorator(Class<? extends ExecutorDecorator> c) {

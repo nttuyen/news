@@ -28,7 +28,7 @@ import org.apache.http.HttpRequestInterceptor;
 
 public class AddJsonFormatDecorator extends ExecutorDecorator {
   @Override
-  public void setExecutor(Executor executor) {
+  public ExecutorDecorator setExecutor(Executor executor) {
     super.setExecutor(executor);
     if(this.getExecutor() instanceof HttpClientExecutor) {
       HttpClientExecutor exe = (HttpClientExecutor)this.getExecutor();
@@ -36,10 +36,12 @@ public class AddJsonFormatDecorator extends ExecutorDecorator {
         request.getParams().setParameter("format", "json");
       });
     }
+    return this;
   }
 
   @Override
   public Response execute(Request request) throws HttpException {
+      request.addParam("format", "json");
     return executor.execute(request);
   }
 }

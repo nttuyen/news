@@ -16,11 +16,11 @@ public class Request {
         this.method = method;
     }
 
-    public void addParam(String name, String value) {
+    public void addParam(String name, Object value) {
         if(params == null) {
             params = new HashMap<>();
         }
-        params.put(name, value);
+        params.put(name, String.valueOf(value));
     }
 
     public Map<String, String> getParams() {
