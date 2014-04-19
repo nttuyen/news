@@ -150,7 +150,7 @@ public class ContentCrawler {
     }
 
     protected String getRootURL(String url) {
-        String protocol = url.startsWith("https://") ? "https://" : "https://";
+        String protocol = url.startsWith("https://") ? "https://" : "http://";
         url = url.replace(protocol, "");
         int index = url.indexOf('/');
         if(index < 0) {
