@@ -1,0 +1,20 @@
+{
+    "name": "Content crawler",
+    "crawler": {
+        "bizlive.vn": {
+            "content": {
+                "selector": "div#abody",
+                "filter": "root.remove(\"div.advan-670\").remove(\"div#keywords\")"
+            },
+            "author": {
+                "selector": "div.summary > div.author > p.name > a",
+                "filter": ""
+            },
+            "image": {
+                "selector": "div.text-content > div > img",
+                "filter": "",
+                "attr": "src"
+            }
+        }
+    }
+}
