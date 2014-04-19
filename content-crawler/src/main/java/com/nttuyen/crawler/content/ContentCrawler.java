@@ -4,6 +4,7 @@ import com.nttuyen.content.api.ContentServiceException;
 import com.nttuyen.content.api.ContentServices;
 import com.nttuyen.content.entity.Article;
 import com.nttuyen.http.*;
+import com.nttuyen.http.decorator.GoogleBotUserAgentDecorator;
 import com.nttuyen.http.decorator.RandomProxyDecorator;
 import com.nttuyen.http.impl.HttpClientExecutor;
 import org.apache.commons.jexl2.Expression;
@@ -65,7 +66,9 @@ public class ContentCrawler {
         this.contentServices = contentServices;
 
         RandomProxyDecorator crawler = new RandomProxyDecorator();
-        crawler.setExecutor(new HttpClientExecutor());
+        GoogleBotUserAgentDecorator googleBot = new GoogleBotUserAgentDecorator();
+        googleBot.setExecutor(new HttpClientExecutor());
+        crawler.setExecutor(googleBot);
         InputStream input = this.getClass().getClassLoader().getResourceAsStream("proxy/proxy.txt");
         if(input != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
