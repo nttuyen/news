@@ -36,18 +36,16 @@ public class RestContentServices implements ContentServices {
         defaultForm.put("jform[asset_id]", "");
         defaultForm.put("jform[title]", "");
         defaultForm.put("jform[alias]", "");
-        defaultForm.put("jform[articletext]", "");
+
+        //defaultForm.put("jform[introtext]", "");
+        //defaultForm.put("jform[fulltext]", "");
+
+        defaultForm.put("jform[state]", "0");
+
         //Uncategory
         //TODO: how to process category
         defaultForm.put("jform[catid]", "2");
 
-        defaultForm.put("jform[state]", "0");
-        defaultForm.put("jform[featured]", "0");
-        defaultForm.put("jform[access]", "1");
-        defaultForm.put("jform[language]", "*");
-        defaultForm.put("jform[version_note]", "Save from ContentRestService");
-        defaultForm.put("jform[publish_up]", "");
-        defaultForm.put("jform[publish_down]", "");
         defaultForm.put("jform[created]", "");
         defaultForm.put("jform[created_by]", "0");
         defaultForm.put("jform[created_by_alias]", "");
@@ -55,17 +53,9 @@ public class RestContentServices implements ContentServices {
         defaultForm.put("jform[modified_by]", "");
         defaultForm.put("jform[checked_out]", "0");
         defaultForm.put("jform[checked_out_time]", "");
-        defaultForm.put("jform[version]", "");
-        defaultForm.put("jform[hits]", "");
-        //TODO: how to process SEO
-        defaultForm.put("jform[metadesc]", "");
-        defaultForm.put("jform[metakey]", "");
-        defaultForm.put("jform[xreference]", "");
-        defaultForm.put("jform[metadata][robots]", "");
-        defaultForm.put("jform[metadata][author]", "");
-        defaultForm.put("jform[metadata][rights]", "");
-        defaultForm.put("jform[metadata][xreference]", "");
-        defaultForm.put("originLink", "");
+
+        defaultForm.put("jform[publish_up]", "");
+        defaultForm.put("jform[publish_down]", "");
 
         //TODO: how to process IMAGE
         defaultForm.put("jform[images][image_intro]", "");
@@ -115,6 +105,30 @@ public class RestContentServices implements ContentServices {
         defaultForm.put("jform[attribs][show_article_options]", "");
         defaultForm.put("jform[attribs][show_urls_images_backend]", "");
         defaultForm.put("jform[attribs][show_urls_images_frontend]", "");
+
+        defaultForm.put("jform[version]", "");
+        defaultForm.put("jform[ordering]", "0");
+
+        //TODO: how to process SEO
+        defaultForm.put("jform[metakey]", "");
+        defaultForm.put("jform[metadesc]", "");
+
+        defaultForm.put("jform[access]", "1");
+        defaultForm.put("jform[hits]", "");
+
+        defaultForm.put("jform[metadata][robots]", "");
+        defaultForm.put("jform[metadata][author]", "");
+        defaultForm.put("jform[metadata][rights]", "");
+        defaultForm.put("jform[metadata][xreference]", "");
+
+        defaultForm.put("jform[featured]", "0");
+        defaultForm.put("jform[language]", "*");
+        defaultForm.put("jform[xreference]", "");
+
+        defaultForm.put("articletext", "");
+        defaultForm.put("originLink", "");
+
+        defaultForm.put("jform[version_note]", "Save from ContentRestService");
     }
 
     private final Executor rest;
@@ -168,8 +182,13 @@ public class RestContentServices implements ContentServices {
         form.put("id", String.valueOf(article.getId()));
         form.put("jform[id]", String.valueOf(article.getId()));
         form.put("jform[title]", article.getTitle());
-        //TODO: process articletext
-        form.put("jform[articletext]", "");
+        
+        String intro = article.getIntro();
+        String fulltext = article.getFulltext();
+
+        String articleText = fulltext == null || "".equals(fulltext) ? intro : new StringBuilder(intro).append("<hr id=\"system-readmore\" />").append(fulltext).toString();
+        form.put("jform[articletext]", articleText);
+
         form.put("jform[state]", String.valueOf(article.getState().getValue()));
         form.put("jform[featured]", article.isFeatured() ? "1" : "0");
         if(article.getPublishDate() != null) {
