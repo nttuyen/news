@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class Content implements Serializable {
     private long id = 0;
     private long assetId = 0;

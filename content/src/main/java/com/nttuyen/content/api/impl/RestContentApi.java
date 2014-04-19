@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class RestContentApi implements ContentApi {
     private static final Logger log = Logger.getLogger(RestContentApi.class);
     private final Request authentication;

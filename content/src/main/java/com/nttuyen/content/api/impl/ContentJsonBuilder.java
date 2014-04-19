@@ -14,6 +14,7 @@ import java.util.Set;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class ContentJsonBuilder implements Builder<Content> {
     private final JSONObject json;
     public ContentJsonBuilder(String jsonString) {
