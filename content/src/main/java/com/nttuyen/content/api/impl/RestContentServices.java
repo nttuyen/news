@@ -182,7 +182,7 @@ public class RestContentServices implements ContentServices {
         form.put("id", String.valueOf(article.getId()));
         form.put("jform[id]", String.valueOf(article.getId()));
         form.put("jform[title]", article.getTitle());
-        
+
         String intro = article.getIntro();
         String fulltext = article.getFulltext();
 
@@ -225,7 +225,7 @@ public class RestContentServices implements ContentServices {
 
             //Process key
             String jsonKey = key.replace("jform[", "");
-            jsonKey = jsonKey.replaceAll("][", "/");
+            jsonKey = jsonKey.replaceAll("\\]\\[", "/");
             jsonKey = jsonKey.replace("]", "");
 
             String jsonVal = JSONUtils.get(json, jsonKey);
