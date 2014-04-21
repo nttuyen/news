@@ -21,6 +21,10 @@
       <groupId>com.nttuyen.news</groupId>
       <artifactId>http</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.nttuyen.news</groupId>
+      <artifactId>content</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.jooq</groupId>

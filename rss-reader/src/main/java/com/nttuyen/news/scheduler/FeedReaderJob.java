@@ -21,6 +21,8 @@ package com.nttuyen.news.scheduler;
 import java.io.IOException;
 import java.util.ServiceLoader;
 
+import com.nttuyen.content.api.impl.RestContentServices;
+import com.nttuyen.http.*;
 import com.nttuyen.news.feed.Feed;
 import com.nttuyen.news.feed.FeedException;
 import com.nttuyen.news.feed.FeedReader;
@@ -41,6 +43,8 @@ import org.quartz.JobExecutionException;
 
 public class FeedReaderJob implements Job {
     private static final Logger log = Logger.getLogger(FeedReaderJob.class);
+
+    //TODO: move these option to config
     public static final int MAX_TRY = 5;
     public static final int SLEEP_TIME = 5000;
 
@@ -51,41 +55,38 @@ public class FeedReaderJob implements Job {
         String feedRootType = data.getString("feedRootType");
 
         FeedReader reader = new FeedReader();
-        try(CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            for(int i = 0; i < links.length(); i++) {
-                String link = links.getString(i);
-                HttpGet get = new HttpGet(link);
-                StringBuilder type = new StringBuilder(feedRootType);
-                type.append(link.substring(link.indexOf('/') + 1));
-                int noTry = 0;
-                while(noTry < MAX_TRY) {
-                    noTry++;
-                    try (CloseableHttpResponse response = httpClient.execute(get)) {
-                        Feed feed = reader.read(response.getEntity().getContent(), type.toString());
-						FeedPersistence persistence = new FeedPersistenceImpl();
-                        persistence.persist(feed);
-                    } catch (ClientProtocolException ex) {
-                        throw ex;
-                    } catch (IOException ex) {
-                        if(noTry >= MAX_TRY) {
-                            throw ex;
-                        } else {
-                            try {
-                                Thread.sleep(SLEEP_TIME);
-                            } catch (InterruptedException e) {
-                                log.error(e);
-                            }
-                        }
-                    } catch (FeedException ex) {
-                        log.error(ex);
-                        break;
+        Executor http = HTTP.createCrawler();
+        FeedPersistence persistence = new FeedPersistenceImpl(new RestContentServices());
+
+        for(int i = 0; i < links.length(); i++) {
+            String link = links.getString(i);
+            Request request = new Request(link, Method.GET);
+            try {
+                int tried = 0;
+                Response response;
+                do {
+                    if(tried > 0) {
+                        Thread.sleep(SLEEP_TIME);
                     }
+                    tried++;
+                    response = http.execute(request);
+                } while (response.getStatusCode() != 200 && tried <= MAX_TRY);
+
+                if(response.getStatusCode() == 200) {
+                    StringBuilder type = new StringBuilder(feedRootType);
+                    type.append(link.substring(link.indexOf('/') + 1));
+                    Feed feed = reader.read(response.getInputStream(), type.toString());
+                    persistence.persist(feed);
+                } else {
+                    log.error("Read RSS from link: " + link + " failed!");
                 }
+            } catch (HttpException
+                    | IOException
+                    | FeedException
+                    | FeedPersistenceException
+                    | InterruptedException ex) {
+                log.error(ex);
             }
-        } catch (IOException ex) {
-            log.error("IOException", ex);
-        } catch (Throwable ex) {
-            log.error(ex);
         }
     }
 }

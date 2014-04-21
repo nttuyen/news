@@ -24,6 +24,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
+@Deprecated
 public class FeedScheduler {
     /**
      * This method will read all file in one folder

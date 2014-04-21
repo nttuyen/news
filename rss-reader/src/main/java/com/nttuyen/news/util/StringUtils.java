@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class StringUtils {
     public static String convertToFriendlyURL(String s) {
         String temp = Normalizer.normalize(s, Normalizer.Form.NFD);

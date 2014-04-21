@@ -8,6 +8,7 @@ import com.nttuyen.http.Response;
 /**
  * @author nttuyen266@gmail.com
  */
+@Deprecated
 public class JSONFormatDecorator extends ExecutorDecorator {
     @Override
     public Response execute(Request request) throws HttpException {
