@@ -151,7 +151,7 @@ public class Article {
     public String getAuthor() {
         String def = null;
         try {
-            def = JSONUtils.get(json, "metadata/author");
+            def = JSONUtils.get(json, "metadata.author");
         } catch (Exception ex){}
         if(def == null) {
             def = "";
@@ -167,7 +167,7 @@ public class Article {
     public String getIntroImage() {
         String def = null;
         try {
-            def = JSONUtils.get(json, "images/image_intro");
+            def = JSONUtils.get(json, "images.image_intro");
         } catch (Exception ex){}
         if(def == null) {
             def = "";
@@ -183,7 +183,7 @@ public class Article {
     public String getFullImage() {
         String def = null;
         try {
-            def = JSONUtils.get(json, "images/image_fulltext");
+            def = JSONUtils.get(json, "images.image_fulltext");
         } catch (Exception ex){}
         if(def == null) {
             def = "";

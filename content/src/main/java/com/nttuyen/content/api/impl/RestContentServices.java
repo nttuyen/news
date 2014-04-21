@@ -225,7 +225,7 @@ public class RestContentServices implements ContentServices {
 
             //Process key
             String jsonKey = key.replace("jform[", "");
-            jsonKey = jsonKey.replaceAll("\\]\\[", "/");
+            jsonKey = jsonKey.replaceAll("\\]\\[", ".");
             jsonKey = jsonKey.replace("]", "");
 
             String jsonVal = JSONUtils.get(json, jsonKey);
