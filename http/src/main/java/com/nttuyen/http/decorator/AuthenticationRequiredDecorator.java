@@ -27,7 +27,12 @@ public class AuthenticationRequiredDecorator extends ExecutorDecorator {
       }
     }
     if(isLoggedIn) {
-      return executor.execute(request);
+      Response response = executor.execute(request);
+      //401 Unauthorized
+      if(response.getStatusCode() == 401) {
+          isLoggedIn = false;
+      }
+      return response;
     }
     throw new HttpException("Can not authentication");
   }
