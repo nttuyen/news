@@ -12,6 +12,7 @@ public class Main {
     private static final Logger log = Logger.getLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
+        log.debug("Content crawler is starting");
         SchedulerFactory factory = new StdSchedulerFactory();
         Scheduler scheduler = factory.getScheduler();
         scheduler.start();
@@ -30,5 +31,6 @@ public class Main {
                 .build();
 
         scheduler.scheduleJob(job, trigger);
+        log.debug("Content crawler started");
     }
 }
