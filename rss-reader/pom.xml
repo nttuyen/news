@@ -121,31 +121,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.jooq</groupId>
-        <artifactId>jooq-codegen-maven</artifactId>
-        <configuration>
-          <jdbc>
-            <driver>com.mysql.jdbc.Driver</driver>
-            <url>jdbc:mysql://localhost:3306/ntt_newsfeed</url>
-            <user>root</user>
-            <password>adminpass</password>
-          </jdbc>
-          <generator>
-            <name>org.jooq.util.DefaultGenerator</name>
-            <database>
-              <name>org.jooq.util.mysql.MySQLDatabase</name>
-              <includes>.*</includes>
-              <excludes></excludes>
-              <inputSchema>ntt_newsfeed</inputSchema>
-            </database>
-            <target>
-              <packageName>com.nttuyen.news.db.mysql</packageName>
-              <directory>target/generated-sources/jooq</directory>
-            </target>
-          </generator>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
