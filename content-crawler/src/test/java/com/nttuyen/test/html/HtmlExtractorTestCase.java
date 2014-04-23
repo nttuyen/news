@@ -11,12 +11,14 @@ import org.junit.Test;
 public class HtmlExtractorTestCase {
     @Test
     public void testExtractorHtml() {
-        String html = "<html><head><title>test</title></head><body><div>Content here <p>need remove this</p><span>need remove this too</span><div>remove sub div</div></div></body>></html>";
+        String html = "<html><head><title>test</title></head><body><div link=\"This is link\">Content here <p>need remove this</p><span>need remove this too</span><div>remove sub div</div></div></body>></html>";
         Document doc = Jsoup.parse(html);
         ContentCrawler crawler = new ContentCrawler(null);
         String select = "div";
-        String filter = "root.remove(\"p\").remove(\"span\").remove(\"div\")";
-        String result = crawler.extractHtml(doc, select, filter);
+        String filter = ".remove(\"p\").remove(\"span\").remove(\"div\")";
+        String result = crawler.extract(doc, select, filter, ".html()");
+        String link = crawler.extract(doc, select, filter, ".attr(\"link\")");
         System.out.println(result);
+        System.out.println(link);
     }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Set;
+import java.util.StringJoiner;
 
 /**
  * @author nttuyen266@gmail.com
@@ -121,21 +122,21 @@ public class ContentCrawler {
             JSONObject json;
             //. extract fulltext
             json = conf.getJSONObject("content");
-            String content = this.extractHtml(doc, json.getString("selector"), json.getString("filter"));
+            String content = this.extract(doc, json.getString("selector"), json.getString("filter"), json.getString("return"));
             if(content != null && !"".equals(content)) {
                 article.setFulltext(content);
             }
 
             //. author
             json = conf.getJSONObject("author");
-            String author = this.extractHtml(doc, json.getString("selector"), json.getString("filter"));
+            String author = this.extract(doc, json.getString("selector"), json.getString("filter"), json.getString("return"));
             if(author != null && !"".equals(author)) {
                 article.setAuthor(author);
             }
 
             //. Full image
             json = conf.getJSONObject("image");
-            String image = this.extractAttr(doc, json.getString("selector"), json.getString("attr"));
+            String image = this.extract(doc, json.getString("selector"), json.getString("filter"), json.getString("return"));
             if(image != null && !"".equals(image)) {
                 if(!image.startsWith("http://") && !image.startsWith("https://")) {
                     image = rootURL + image;
@@ -192,41 +193,65 @@ public class ContentCrawler {
      *                  .select("expression_to_remove").remove()
      *                  .select("expression_to_remove").remove()
      *                  .select("expression_to_remove").remove()
-     * @param doc
+     * @param d
      * @param select
      * @param filterExpression
      * @return
      */
-    public String extractHtml(Document doc, String select, String filterExpression) {
-        //TODO: how to compile expression?
+    public String extract(Document d, String select, String filterExpression, String ret) {
+        Document doc = d.clone();
         Elements els = doc.select(select);
         if(els == null || els.size() == 0) {
             return "";
         }
         ElementWraper root = new ElementWraper(els.first());
+        final String param = "root";
 
         if(filterExpression != null && !"".equals(filterExpression)) {
             try {
-                Expression exp = jexl.createExpression(filterExpression);
+                String[] expressions = filterExpression.split(";");
+                StringJoiner joiner = new StringJoiner(";");
+                for(String exps : expressions) {
+                    if("".equals(exps)) {
+                        continue;
+                    }
+                    if(exps.charAt(0) == '.') {
+                        joiner.add(param + exps);
+                    } else {
+                        joiner.add(exps);
+                    }
+                }
+
+                Expression exp = jexl.createExpression(joiner.toString());
                 JexlContext context = new MapContext();
-                context.set("root", root);
+                context.set(param, root);
                 exp.evaluate(context);
             } catch (Exception ex) {
-                //TODO: should return EMPTY here?
                 log.error(ex);
                 return "";
             }
         }
 
-        return root.html();
-    }
-    public String extractAttr(Document doc, String selector, String attr) {
-        Elements els = doc.select(selector);
-        if(els == null || els.size() == 0) {
-            return "";
+        if(ret != null && !"".equals(ret)) {
+            //is method call
+            if(ret.indexOf('(') > 0 && ret.indexOf(')') > 0) {
+                if(ret.charAt(0) == '.') {
+                    ret = param + ret;
+                }
+                //ret = "return " + ret;
+                try {
+                    Expression exp = jexl.createExpression(ret);
+                    JexlContext context = new MapContext();
+                    context.set(param, root);
+                    return (String)exp.evaluate(context);
+                } catch (Exception ex) {
+                    log.error(ex);
+                    return "";
+                }
+            }
         }
-        Element root = els.first();
-        return root.attr(attr);
+
+        return root.html();
     }
 
     protected void persist(Article article) {
@@ -251,6 +276,10 @@ public class ContentCrawler {
 
         public String html() {
             return element.html();
+        }
+
+        public String attr(String attributeKey) {
+            return element.attr(attributeKey);
         }
     }
 }

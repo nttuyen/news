@@ -4,16 +4,18 @@
         "bizlive.vn": {
             "content": {
                 "selector": "div#abody",
-                "filter": "root.remove(\"div.advan-670\").remove(\"div#keywords\")"
+                "filter": ".remove(\"div.advan-670\").remove(\"div#keywords\")",
+                "return": "html"
             },
             "author": {
                 "selector": "div.summary > div.author > p.name > a",
-                "filter": ""
+                "filter": "",
+                "return": "html"
             },
             "image": {
                 "selector": "div.text-content > div > img",
                 "filter": "",
-                "attr": "src"
+                "return": ".attr(\"src\")"
             }
         }
     }
