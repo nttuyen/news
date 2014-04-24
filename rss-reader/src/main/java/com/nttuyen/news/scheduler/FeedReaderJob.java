@@ -18,24 +18,19 @@
  */
 package com.nttuyen.news.scheduler;
 
-import java.io.IOException;
-import java.util.ServiceLoader;
+import java.util.Set;
 
 import com.nttuyen.content.api.impl.RestContentServices;
-import com.nttuyen.http.*;
+import com.nttuyen.http.Executor;
+import com.nttuyen.http.HTTP;
+import com.nttuyen.http.Method;
+import com.nttuyen.http.Request;
+import com.nttuyen.http.Response;
 import com.nttuyen.news.feed.Feed;
-import com.nttuyen.news.feed.FeedException;
 import com.nttuyen.news.feed.FeedReader;
 import com.nttuyen.news.persistence.FeedPersistence;
-import com.nttuyen.news.persistence.FeedPersistenceException;
 import com.nttuyen.news.persistence.impl.FeedPersistenceImpl;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -44,49 +39,52 @@ import org.quartz.JobExecutionException;
 public class FeedReaderJob implements Job {
     private static final Logger log = Logger.getLogger(FeedReaderJob.class);
 
-    //TODO: move these option to config
-    public static final int MAX_TRY = 5;
-    public static final int SLEEP_TIME = 5000;
+    public static final String KEY_MAX_TRY = "max-try";
+    public static final String KEY_SLEEP_TIME = "sleep-time";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_TYPE = "type";
+    public static final String KEY_LINKS = "links";
+    public static final String KEY_DEFAULT_CATEGORY_PREFIX = "category#";
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap data = context.getMergedJobDataMap();
-        JSONArray links = new JSONArray(data.getString("links"));
-        String feedRootType = data.getString("feedRootType");
+
+        Set<String> links = (Set<String>)data.get(KEY_LINKS);
+        links.forEach((link) -> read(link, data));
+    }
+
+    protected void read(String rss, JobDataMap data) {
+        final int MAX_TRY = data.getInt(KEY_MAX_TRY);
+        final int SLEEP_TIME = data.getInt(KEY_SLEEP_TIME);
+        final String type = data.getString(KEY_TYPE);
 
         FeedReader reader = new FeedReader();
         Executor http = HTTP.createCrawler();
         FeedPersistence persistence = new FeedPersistenceImpl(new RestContentServices());
+        Request request = new Request(rss, Method.GET);
 
-        for(int i = 0; i < links.length(); i++) {
-            String link = links.getString(i);
-            Request request = new Request(link, Method.GET);
-            try {
-                int tried = 0;
-                Response response;
-                do {
-                    if(tried > 0) {
-                        Thread.sleep(SLEEP_TIME);
-                    }
-                    tried++;
-                    response = http.execute(request);
-                } while (response.getStatusCode() != 200 && tried <= MAX_TRY);
-
-                if(response.getStatusCode() == 200) {
-                    StringBuilder type = new StringBuilder(feedRootType);
-                    type.append(link.substring(link.indexOf('/') + 1));
-                    Feed feed = reader.read(response.getInputStream(), type.toString());
-                    persistence.persist(feed);
-                } else {
-                    log.error("Read RSS from link: " + link + " failed!");
+        try {
+            int tried = 0;
+            Response response;
+            do {
+                if(tried > 0) {
+                    Thread.sleep(SLEEP_TIME);
                 }
-            } catch (HttpException
-                    | IOException
-                    | FeedException
-                    | FeedPersistenceException
-                    | InterruptedException ex) {
-                log.error(ex);
+                tried++;
+                response = http.execute(request);
+            } while (response.getStatusCode() != 200 && tried <= MAX_TRY);
+
+            if(response.getStatusCode() == 200) {
+                StringBuilder sb = new StringBuilder(type);
+                sb.append(rss.substring(rss.indexOf('/') + 1));
+                Feed feed = reader.read(response.getInputStream(), type.toString());
+                persistence.persist(feed);
+            } else {
+                log.error("Read RSS from link: " + rss + " failed!");
             }
+        } catch (Exception ex) {
+            log.warn(ex);
         }
     }
 }

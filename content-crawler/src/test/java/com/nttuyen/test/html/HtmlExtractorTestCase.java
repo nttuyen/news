@@ -13,7 +13,7 @@ public class HtmlExtractorTestCase {
     public void testExtractorHtml() {
         String html = "<html><head><title>test</title></head><body><div link=\"This is link\">Content here <p>need remove this</p><span>need remove this too</span><div>remove sub div</div></div></body>></html>";
         Document doc = Jsoup.parse(html);
-        ContentCrawler crawler = new ContentCrawler(null);
+        ContentCrawler crawler = new ContentCrawler(null, null);
         String select = "div";
         String filter = ".remove(\"p\").remove(\"span\").remove(\"div\")";
         String result = crawler.extract(doc, select, filter, ".html()");

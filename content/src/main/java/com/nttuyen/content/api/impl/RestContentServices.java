@@ -5,6 +5,7 @@ import com.nttuyen.content.api.ContentServiceException;
 import com.nttuyen.content.api.ContentServices;
 import com.nttuyen.content.entity.Article;
 import com.nttuyen.http.Executor;
+import com.nttuyen.http.HTTP;
 import com.nttuyen.http.Method;
 import com.nttuyen.http.Request;
 import com.nttuyen.http.Response;
@@ -12,6 +13,8 @@ import com.nttuyen.http.decorator.AddJsonFormatDecorator;
 import com.nttuyen.http.decorator.AuthenticationRequiredDecorator;
 import com.nttuyen.http.decorator.MultiRequestDecorator;
 import com.nttuyen.http.impl.HttpClientExecutor;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import java.text.DateFormat;
@@ -24,7 +27,6 @@ import java.util.Map;
  */
 public class RestContentServices implements ContentServices {
     private static final Logger log = Logger.getLogger(RestContentServices.class);
-    private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final Map<String, String> defaultForm = new HashMap<>();
     static {
         defaultForm.put("option", "com_content");
@@ -132,27 +134,15 @@ public class RestContentServices implements ContentServices {
     }
 
     private final Executor rest;
-    private final Request auth;
     private final Request nextCrawledRequest;
+    private final DateFormat df;
+    private final Config config;
 
     public RestContentServices() {
-        auth = new Request("http://127.0.0.1:86/administrator/index.php", Method.POST);
-        auth.addParam("option", "com_login");
-        auth.addParam("task", "api.login");
-        auth.addParam("username", "nttuyen");
-        auth.addParam("password", "adminpass");
-        auth.addParam("format", "json");
-
-        nextCrawledRequest = new Request("http://127.0.0.1:86/administrator/index.php", Method.GET);
-        nextCrawledRequest.addParam("option", "com_contentapi");
-        nextCrawledRequest.addParam("view", "nextcontent");
-        nextCrawledRequest.addParam("format", "json");
-
-        Executor rest = new HttpClientExecutor();
-        rest = new AddJsonFormatDecorator().setExecutor(rest);
-        rest = new AuthenticationRequiredDecorator(auth).setExecutor(rest);
-        rest = new MultiRequestDecorator().setExecutor(rest);
-        this.rest = rest;
+        config = ConfigFactory.load();
+        df = new SimpleDateFormat(config.getString("news.content.api.rest.date-time-format"));
+        nextCrawledRequest = HTTP.createRequest(config.getConfig("news.content.api.rest.requests.next-crawled-content"));
+        this.rest = HTTP.createRestExecutor();
     }
 
     @Override
@@ -200,10 +190,10 @@ public class RestContentServices implements ContentServices {
         form.put("jform[images][image_intro]", article.getIntroImage());
         form.put("jform[images][image_fulltext]", article.getFullImage());
 
-        Request save = new Request("http://127.0.0.1:86/administrator/index.php", Method.POST);
-        for(Map.Entry<String, String> entry : form.entrySet()) {
-            save.addParam(entry.getKey(), entry.getValue());
-        }
+        Request save = new Request(config.getString("news.content.api.rest.requests.save.url"),
+                                    Method.valueOf(config.getString("news.content.api.rest.requests.save.method")));
+        form.forEach(save::addParam);
+
         try {
             Response response = rest.execute(save);
             if(response.getStatusCode() != 200 && response.getStatusCode() != 201) {

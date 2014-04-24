@@ -7,6 +7,7 @@ import com.nttuyen.http.*;
 import com.nttuyen.http.decorator.GoogleBotUserAgentDecorator;
 import com.nttuyen.http.decorator.RandomProxyDecorator;
 import com.nttuyen.http.impl.HttpClientExecutor;
+import com.typesafe.config.Config;
 import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
@@ -23,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -31,45 +34,22 @@ import java.util.StringJoiner;
  */
 public class ContentCrawler {
     private static final Logger log = Logger.getLogger(ContentCrawler.class);
-    private static final JSONObject config;
     private static final JexlEngine jexl = new JexlEngine();
+    private final Config conf;
     static {
         jexl.setCache(512);
         jexl.setLenient(false);
         jexl.setSilent(false);
-
-        StringBuilder conf = new StringBuilder();
-        try {
-            InputStream input = ContentCrawler.class.getClassLoader().getResourceAsStream("conf/content-crawler.json");
-            if(input != null) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                String line;
-                while((line = reader.readLine()) != null) {
-                    conf.append(line);
-                }
-                reader.close();
-            }
-
-        } catch (Exception ex) {
-
-        }
-        if(conf.length() == 0) {
-            config = new JSONObject();
-        } else {
-            config = new JSONObject(conf.toString());
-        }
     }
 
     private final ContentServices contentServices;
     private final Executor http;
 
-    public ContentCrawler(ContentServices contentServices) {
+    public ContentCrawler(ContentServices contentServices, Config conf) {
         this.contentServices = contentServices;
+        this.conf = conf;
 
-        RandomProxyDecorator crawler = new RandomProxyDecorator();
-        GoogleBotUserAgentDecorator googleBot = new GoogleBotUserAgentDecorator();
-        googleBot.setExecutor(new HttpClientExecutor());
-        crawler.setExecutor(googleBot);
+        Map<String, Integer> proxies = new HashMap<>();
         InputStream input = this.getClass().getClassLoader().getResourceAsStream("proxy/proxy.txt");
         if(input != null) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -79,14 +59,15 @@ public class ContentCrawler {
                     String[] parts = line.split(":");
                     if(parts.length == 2) {
                         int port = Integer.parseInt(parts[1]);
-                        crawler.addProxy(parts[0], port);
+                        proxies.put(parts[0], port);
                     }
                 }
             } catch (IOException ex) {
                 log.error(ex);
             }
         }
-        this.http = crawler;
+
+        this.http = HTTP.createCrawler(proxies);
     }
 
     public void executeCrawl() {
@@ -108,8 +89,8 @@ public class ContentCrawler {
             return null;
         }
 
-        JSONObject conf = this.getConfig(originLink);
-        if(conf == null) {
+        Config con = this.getConfig(originLink);
+        if(con == null) {
             return null;
         }
         String rootURL = this.getRootURL(originLink);
@@ -119,24 +100,24 @@ public class ContentCrawler {
             Response response = http.execute(request);
             String html = response.getResponse();
             Document doc = Jsoup.parse(html);
-            JSONObject json;
+            Config c;
             //. extract fulltext
-            json = conf.getJSONObject("content");
-            String content = this.extract(doc, json.getString("selector"), json.getString("filter"), json.getString("return"));
+            c = con.getConfig("content");
+            String content = this.extract(doc, c.getString("selector"), c.getString("filter"), c.getString("return"));
             if(content != null && !"".equals(content)) {
                 article.setFulltext(content);
             }
 
             //. author
-            json = conf.getJSONObject("author");
-            String author = this.extract(doc, json.getString("selector"), json.getString("filter"), json.getString("return"));
+            c = con.getConfig("author");
+            String author = this.extract(doc, c.getString("selector"), c.getString("filter"), c.getString("return"));
             if(author != null && !"".equals(author)) {
                 article.setAuthor(author);
             }
 
             //. Full image
-            json = conf.getJSONObject("image");
-            String image = this.extract(doc, json.getString("selector"), json.getString("filter"), json.getString("return"));
+            c = con.getConfig("image");
+            String image = this.extract(doc, c.getString("selector"), c.getString("filter"), c.getString("return"));
             if(image != null && !"".equals(image)) {
                 if(!image.startsWith("http://") && !image.startsWith("https://")) {
                     image = rootURL + image;
@@ -164,27 +145,23 @@ public class ContentCrawler {
         return protocol + domain;
     }
 
-    protected JSONObject getConfig(String url) {
+    protected Config getConfig(String url) {
         url = url.replace("http://", "");
         url = url.replace("https://", "");
-
-        try {
-            JSONObject crawlerConfig = config.getJSONObject("crawler");
-            Set<String> keys = crawlerConfig.keySet();
-            String match = "";
-            for(String key : keys) {
-                if(("*".equals(key) || url.startsWith(key)) && key.length() > match.length()) {
-                    match = key;
+        String matchedKey = "";
+        Config crawler = conf.getConfig("news.content-crawler.crawler");
+        for(Map.Entry<String, ?> entry : crawler.root().entrySet()) {
+            String key = entry.getKey();
+            if(url.startsWith(key) || "*".equals(key)) {
+                if(matchedKey.length() < key.length()) {
+                    matchedKey = key;
                 }
             }
-            if("".equals(match)) {
-                return null;
-            } else {
-                return crawlerConfig.getJSONObject(match);
-            }
-        } catch (JSONException ex) {
-            log.error(ex);
+        }
+        if("".equals(matchedKey)) {
             return null;
+        } else {
+            return crawler.getConfig(matchedKey);
         }
     }
 
